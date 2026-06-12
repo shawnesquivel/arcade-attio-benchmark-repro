@@ -2,7 +2,7 @@
 
 An independent, end-to-end reproduction of [Arcade's attio-mcp-benchmark](https://github.com/ArcadeAI/attio-mcp-benchmark), which claimed Arcade's Attio toolkit uses **~100× fewer tokens** than Composio's.
 
-**Read the full results:** open [`index.html`](index.html) (one-page explainer, no build needed).
+**Read the full results:** [arcade-attio-benchmark-repro.vercel.app](https://arcade-attio-benchmark-repro.vercel.app) (or open [`index.html`](index.html) locally — no build needed).
 
 ## TLDR
 
