@@ -1,0 +1,209 @@
+{
+  "totals": {
+    "s0": {
+      "arcade": 7426,
+      "composio": 747083
+    },
+    "s1": {
+      "arcade": 6903,
+      "composio": 564231
+    },
+    "s2": {
+      "arcade": 8871,
+      "composio": 564231
+    },
+    "s3": {
+      "arcade": 8871,
+      "composio": 291264
+    },
+    "s4": {
+      "arcade": 8871,
+      "composio": 75324
+    }
+  },
+  "labels": {
+    "s0": "as committed (their methodology)",
+    "s1": "minify both (formatting-neutral)",
+    "s2": "+ matched limits (arcade limit=500)",
+    "s3": "+ strip Attio metadata wrapper (counterfactual Composio)",
+    "s4": "+ project to Arcade's fields (counterfactual Composio)"
+  },
+  "per_query": {
+    "01-list-all-companies": {
+      "s0": {
+        "arcade": 902,
+        "composio": 144363
+      },
+      "s1": {
+        "arcade": 861,
+        "composio": 107435
+      },
+      "s2": {
+        "arcade": 861,
+        "composio": 107435
+      },
+      "s3": {
+        "arcade": 861,
+        "composio": 60073
+      },
+      "s4": {
+        "arcade": 861,
+        "composio": 978
+      }
+    },
+    "02-deals-by-stage": {
+      "s0": {
+        "arcade": 974,
+        "composio": 48792
+      },
+      "s1": {
+        "arcade": 932,
+        "composio": 37434
+      },
+      "s2": {
+        "arcade": 932,
+        "composio": 37434
+      },
+      "s3": {
+        "arcade": 932,
+        "composio": 15258
+      },
+      "s4": {
+        "arcade": 932,
+        "composio": 4059
+      }
+    },
+    "03-deals-over-50k": {
+      "s0": {
+        "arcade": 1072,
+        "composio": 66752
+      },
+      "s1": {
+        "arcade": 1015,
+        "composio": 51123
+      },
+      "s2": {
+        "arcade": 1216,
+        "composio": 51123
+      },
+      "s3": {
+        "arcade": 1216,
+        "composio": 20816
+      },
+      "s4": {
+        "arcade": 1216,
+        "composio": 1616
+      }
+    },
+    "04-companies-name-search": {
+      "s0": {
+        "arcade": 354,
+        "composio": 48103
+      },
+      "s1": {
+        "arcade": 297,
+        "composio": 36347
+      },
+      "s2": {
+        "arcade": 297,
+        "composio": 36347
+      },
+      "s3": {
+        "arcade": 297,
+        "composio": 20412
+      },
+      "s4": {
+        "arcade": 297,
+        "composio": 321
+      }
+    },
+    "05-technology-companies": {
+      "s0": {
+        "arcade": 1030,
+        "composio": 165958
+      },
+      "s1": {
+        "arcade": 979,
+        "composio": 124699
+      },
+      "s2": {
+        "arcade": 1128,
+        "composio": 124699
+      },
+      "s3": {
+        "arcade": 1128,
+        "composio": 71018
+      },
+      "s4": {
+        "arcade": 1128,
+        "composio": 31283
+      }
+    },
+    "06-deals-by-close-date": {
+      "s0": {
+        "arcade": 1600,
+        "composio": 111829
+      },
+      "s1": {
+        "arcade": 1544,
+        "composio": 85680
+      },
+      "s2": {
+        "arcade": 3072,
+        "composio": 85680
+      },
+      "s3": {
+        "arcade": 3072,
+        "composio": 35012
+      },
+      "s4": {
+        "arcade": 3072,
+        "composio": 3752
+      }
+    },
+    "07-compound-filter": {
+      "s0": {
+        "arcade": 1329,
+        "composio": 159032
+      },
+      "s1": {
+        "arcade": 1184,
+        "composio": 119798
+      },
+      "s2": {
+        "arcade": 1274,
+        "composio": 119798
+      },
+      "s3": {
+        "arcade": 1274,
+        "composio": 67968
+      },
+      "s4": {
+        "arcade": 1274,
+        "composio": 33219
+      }
+    },
+    "08-sort-and-limit": {
+      "s0": {
+        "arcade": 165,
+        "composio": 2254
+      },
+      "s1": {
+        "arcade": 91,
+        "composio": 1715
+      },
+      "s2": {
+        "arcade": 91,
+        "composio": 1715
+      },
+      "s3": {
+        "arcade": 91,
+        "composio": 707
+      },
+      "s4": {
+        "arcade": 91,
+        "composio": 96
+      }
+    }
+  }
+}

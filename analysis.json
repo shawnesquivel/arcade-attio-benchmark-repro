@@ -1,0 +1,302 @@
+{
+  "their_committed_arcade": {
+    "01-list-all-companies": {
+      "file_tokens_as_committed": 902,
+      "payload_tokens_min": 857,
+      "payload_tokens_pretty": 1128,
+      "records": 25
+    },
+    "02-deals-by-stage": {
+      "file_tokens_as_committed": 974,
+      "payload_tokens_min": 915,
+      "payload_tokens_pretty": 1222,
+      "records": 22
+    },
+    "03-deals-over-50k": {
+      "file_tokens_as_committed": 1072,
+      "payload_tokens_min": 1014,
+      "payload_tokens_pretty": 1360,
+      "records": 25
+    },
+    "04-companies-name-search": {
+      "file_tokens_as_committed": 354,
+      "payload_tokens_min": 301,
+      "payload_tokens_pretty": 402,
+      "records": 8
+    },
+    "05-technology-companies": {
+      "file_tokens_as_committed": 1030,
+      "payload_tokens_min": 974,
+      "payload_tokens_pretty": 1320,
+      "records": 25
+    },
+    "06-deals-by-close-date": {
+      "file_tokens_as_committed": 1600,
+      "payload_tokens_min": 1526,
+      "payload_tokens_pretty": 1947,
+      "records": 25
+    },
+    "07-compound-filter": {
+      "file_tokens_as_committed": 1329,
+      "payload_tokens_min": 1181,
+      "payload_tokens_pretty": 1602,
+      "records": 25
+    },
+    "08-sort-and-limit": {
+      "file_tokens_as_committed": 165,
+      "payload_tokens_min": 96,
+      "payload_tokens_pretty": 133,
+      "records": 1
+    }
+  },
+  "their_committed_composio": {
+    "01-list-all-companies": {
+      "file_tokens_as_committed": 144363,
+      "payload_tokens_min": 108687,
+      "payload_tokens_pretty": 144363,
+      "records": 25
+    },
+    "02-deals-by-stage": {
+      "file_tokens_as_committed": 48792,
+      "payload_tokens_min": 36637,
+      "payload_tokens_pretty": 48792,
+      "records": 22
+    },
+    "03-deals-over-50k": {
+      "file_tokens_as_committed": 66752,
+      "payload_tokens_min": 50129,
+      "payload_tokens_pretty": 66752,
+      "records": 30
+    },
+    "04-companies-name-search": {
+      "file_tokens_as_committed": 48103,
+      "payload_tokens_min": 36292,
+      "payload_tokens_pretty": 48103,
+      "records": 8
+    },
+    "05-technology-companies": {
+      "file_tokens_as_committed": 165958,
+      "payload_tokens_min": 124785,
+      "payload_tokens_pretty": 165958,
+      "records": 29
+    },
+    "06-deals-by-close-date": {
+      "file_tokens_as_committed": 111829,
+      "payload_tokens_min": 84010,
+      "payload_tokens_pretty": 111829,
+      "records": 50
+    },
+    "07-compound-filter": {
+      "file_tokens_as_committed": 159032,
+      "payload_tokens_min": 119680,
+      "payload_tokens_pretty": 159032,
+      "records": 27
+    },
+    "08-sort-and-limit": {
+      "file_tokens_as_committed": 2254,
+      "payload_tokens_min": 1691,
+      "payload_tokens_pretty": 2254,
+      "records": 1
+    }
+  },
+  "repro_arcade": {
+    "01-list-all-companies": {
+      "file_tokens_as_committed": 1182,
+      "payload_tokens_min": 861,
+      "payload_tokens_pretty": 1132,
+      "records": 25
+    },
+    "02-deals-by-stage": {
+      "file_tokens_as_committed": 1311,
+      "payload_tokens_min": 932,
+      "payload_tokens_pretty": 1239,
+      "records": 22
+    },
+    "03-deals-over-50k": {
+      "file_tokens_as_committed": 1432,
+      "payload_tokens_min": 1015,
+      "payload_tokens_pretty": 1361,
+      "records": 25
+    },
+    "04-companies-name-search": {
+      "file_tokens_as_committed": 463,
+      "payload_tokens_min": 297,
+      "payload_tokens_pretty": 398,
+      "records": 8
+    },
+    "05-technology-companies": {
+      "file_tokens_as_committed": 1394,
+      "payload_tokens_min": 979,
+      "payload_tokens_pretty": 1325,
+      "records": 25
+    },
+    "06-deals-by-close-date": {
+      "file_tokens_as_committed": 2053,
+      "payload_tokens_min": 1544,
+      "payload_tokens_pretty": 1965,
+      "records": 25
+    },
+    "07-compound-filter": {
+      "file_tokens_as_committed": 1791,
+      "payload_tokens_min": 1184,
+      "payload_tokens_pretty": 1605,
+      "records": 25
+    },
+    "08-sort-and-limit": {
+      "file_tokens_as_committed": 204,
+      "payload_tokens_min": 91,
+      "payload_tokens_pretty": 128,
+      "records": 1
+    }
+  },
+  "repro_composio": {
+    "01-list-all-companies": {
+      "file_tokens_as_committed": 141795,
+      "payload_tokens_min": 107435,
+      "payload_tokens_pretty": 141762,
+      "records": 25
+    },
+    "02-deals-by-stage": {
+      "file_tokens_as_committed": 49646,
+      "payload_tokens_min": 37434,
+      "payload_tokens_pretty": 49589,
+      "records": 22
+    },
+    "03-deals-over-50k": {
+      "file_tokens_as_committed": 67802,
+      "payload_tokens_min": 51123,
+      "payload_tokens_pretty": 67746,
+      "records": 30
+    },
+    "04-companies-name-search": {
+      "file_tokens_as_committed": 47890,
+      "payload_tokens_min": 36347,
+      "payload_tokens_pretty": 47836,
+      "records": 8
+    },
+    "05-technology-companies": {
+      "file_tokens_as_committed": 164730,
+      "payload_tokens_min": 124699,
+      "payload_tokens_pretty": 164676,
+      "records": 29
+    },
+    "06-deals-by-close-date": {
+      "file_tokens_as_committed": 113569,
+      "payload_tokens_min": 85680,
+      "payload_tokens_pretty": 113499,
+      "records": 50
+    },
+    "07-compound-filter": {
+      "file_tokens_as_committed": 158246,
+      "payload_tokens_min": 119798,
+      "payload_tokens_pretty": 158080,
+      "records": 27
+    },
+    "08-sort-and-limit": {
+      "file_tokens_as_committed": 2338,
+      "payload_tokens_min": 1715,
+      "payload_tokens_pretty": 2278,
+      "records": 1
+    }
+  },
+  "repro_arcade_matched": {
+    "01-list-all-companies": {
+      "file_tokens_as_committed": 1182,
+      "payload_tokens_min": 861,
+      "payload_tokens_pretty": 1132,
+      "records": 25
+    },
+    "02-deals-by-stage": {
+      "file_tokens_as_committed": 1318,
+      "payload_tokens_min": 932,
+      "payload_tokens_pretty": 1239,
+      "records": 22
+    },
+    "03-deals-over-50k": {
+      "file_tokens_as_committed": 1705,
+      "payload_tokens_min": 1216,
+      "payload_tokens_pretty": 1627,
+      "records": 30
+    },
+    "04-companies-name-search": {
+      "file_tokens_as_committed": 470,
+      "payload_tokens_min": 297,
+      "payload_tokens_pretty": 398,
+      "records": 8
+    },
+    "05-technology-companies": {
+      "file_tokens_as_committed": 1602,
+      "payload_tokens_min": 1128,
+      "payload_tokens_pretty": 1526,
+      "records": 29
+    },
+    "06-deals-by-close-date": {
+      "file_tokens_as_committed": 3988,
+      "payload_tokens_min": 3072,
+      "payload_tokens_pretty": 3893,
+      "records": 50
+    },
+    "07-compound-filter": {
+      "file_tokens_as_committed": 1920,
+      "payload_tokens_min": 1274,
+      "payload_tokens_pretty": 1727,
+      "records": 27
+    },
+    "08-sort-and-limit": {
+      "file_tokens_as_committed": 204,
+      "payload_tokens_min": 91,
+      "payload_tokens_pretty": 128,
+      "records": 1
+    }
+  },
+  "attio_api_baseline": {
+    "01-list-all-companies": {
+      "payload_tokens_min": 109711,
+      "payload_tokens_pretty": 145214,
+      "records": 25
+    },
+    "02-deals-by-stage": {
+      "payload_tokens_min": 37427,
+      "payload_tokens_pretty": 49576,
+      "records": 22
+    },
+    "03-deals-over-50k": {
+      "payload_tokens_min": 51116,
+      "payload_tokens_pretty": 67733,
+      "records": 30
+    },
+    "04-companies-name-search": {
+      "payload_tokens_min": 37040,
+      "payload_tokens_pretty": 48895,
+      "records": 8
+    },
+    "05-technology-companies": {
+      "payload_tokens_min": 127395,
+      "payload_tokens_pretty": 168805,
+      "records": 29
+    },
+    "06-deals-by-close-date": {
+      "payload_tokens_min": 85673,
+      "payload_tokens_pretty": 113486,
+      "records": 50
+    },
+    "07-compound-filter": {
+      "payload_tokens_min": 122223,
+      "payload_tokens_pretty": 161804,
+      "records": 27
+    },
+    "08-sort-and-limit": {
+      "payload_tokens_min": 1708,
+      "payload_tokens_pretty": 2265,
+      "records": 1
+    }
+  },
+  "their_arcade_schema_calls": {
+    "schema-companies.json": {
+      "file_tokens_as_committed": 1145
+    },
+    "schema-deals.json": {
+      "file_tokens_as_committed": 369
+    }
+  }
+}

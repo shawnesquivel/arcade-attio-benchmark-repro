@@ -1,0 +1,72 @@
+{
+  "arcade": {
+    "01-list-all-companies": {
+      "payload_tokens_min": 861,
+      "records": 25
+    },
+    "02-deals-by-stage": {
+      "payload_tokens_min": 932,
+      "records": 22
+    },
+    "03-deals-over-50k": {
+      "payload_tokens_min": 1015,
+      "records": 25
+    },
+    "04-companies-name-search": {
+      "payload_tokens_min": 297,
+      "records": 8
+    },
+    "05-technology-companies": {
+      "payload_tokens_min": 979,
+      "records": 25
+    },
+    "06-deals-by-close-date": {
+      "payload_tokens_min": 1544,
+      "records": 25
+    },
+    "07-compound-filter": {
+      "payload_tokens_min": 1184,
+      "records": 25
+    },
+    "08-sort-and-limit": {
+      "payload_tokens_min": 91,
+      "records": 1
+    },
+    "_schema_calls_tokens": 2412
+  },
+  "composio": {
+    "01-list-all-companies": {
+      "payload_tokens_min": 107435,
+      "records": 25
+    },
+    "02-deals-by-stage": {
+      "payload_tokens_min": 37434,
+      "records": 22
+    },
+    "03-deals-over-50k": {
+      "payload_tokens_min": 51123,
+      "records": 30
+    },
+    "04-companies-name-search": {
+      "payload_tokens_min": 36347,
+      "records": 8
+    },
+    "05-technology-companies": {
+      "payload_tokens_min": 124699,
+      "records": 29
+    },
+    "06-deals-by-close-date": {
+      "payload_tokens_min": 85680,
+      "records": 50
+    },
+    "07-compound-filter": {
+      "payload_tokens_min": 119798,
+      "records": 27
+    },
+    "08-sort-and-limit": {
+      "payload_tokens_min": 1715,
+      "records": 1
+    },
+    "_schema_calls_tokens": 0
+  }
+}
