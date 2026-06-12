@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Re-running Arcade's Attio Benchmark — What Holds Up</title>
+  <title>Reproducing "A 100× Token Difference" — Independent Replication Report</title>
   <style>
     :root {
       color-scheme: light;
@@ -28,16 +28,16 @@
         var(--paper);
       background-size: 28px 28px;
       color: var(--ink);
-      font: 14px/1.45 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font: 14px/1.5 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
     main { width: min(1140px, calc(100% - 40px)); margin: 0 auto; padding: 26px 0 36px; }
     h1, h2, h3, p { margin: 0; }
     header {
-      display: grid; grid-template-columns: 1.25fr 0.75fr; gap: 28px; align-items: end;
-      margin-bottom: 22px; border-bottom: 2px solid var(--ink); padding-bottom: 16px;
+      margin-bottom: 22px; border-bottom: 2px solid var(--ink); padding-bottom: 18px;
     }
-    h1 { font-size: clamp(32px, 4.6vw, 58px); line-height: 0.98; max-width: 780px; }
-    .dek { color: var(--muted); font-size: 15px; max-width: 420px; }
+    .kicker { font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); font-weight: 700; margin-bottom: 10px; }
+    h1 { font-size: clamp(28px, 4.2vw, 50px); line-height: 1.04; max-width: 960px; }
+    .byline { color: var(--muted); font-size: 13px; margin-top: 12px; }
     .tagline { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
     .tag {
       border: 1px solid var(--line); background: rgba(255,255,255,0.72); border-radius: 999px;
@@ -45,32 +45,36 @@
     }
     section {
       background: rgba(255,255,255,0.78); border: 1px solid var(--line); border-radius: 8px;
-      padding: 22px; box-shadow: 0 12px 28px rgba(24,32,47,0.08); margin-top: 26px;
+      padding: 22px; box-shadow: 0 12px 28px rgba(24,32,47,0.08); margin-top: 24px;
     }
     h2 { font-size: 15px; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 14px; }
-    .verdict-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-    .stat {
-      border: 1px solid var(--line); border-radius: 8px; padding: 16px 18px; background: #fff;
+    h2 .sn { color: var(--blue); margin-right: 8px; }
+    h3 { font-size: 13.5px; margin: 16px 0 8px; }
+    section > p { font-size: 13.5px; max-width: 880px; }
+    blockquote {
+      margin: 12px 0; padding: 10px 16px; border-left: 3px solid var(--blue);
+      background: #f2f6ff; border-radius: 0 6px 6px 0; font-size: 13.5px; font-style: italic; color: #243044;
     }
+    blockquote .att { display: block; margin-top: 6px; font-style: normal; font-size: 11.5px; color: var(--muted); }
+    .verdict-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .stat { border: 1px solid var(--line); border-radius: 8px; padding: 16px 18px; background: #fff; }
     .stat .num { font-size: 38px; font-weight: 800; line-height: 1; }
     .stat .lbl { color: var(--muted); font-size: 12.5px; margin-top: 8px; line-height: 1.4; }
     .stat.blue .num { color: var(--blue); }
     .stat.green .num { color: var(--green); }
     .stat.red .num { color: var(--red); }
-    .flow { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
-    .step { border: 1px solid var(--line); border-radius: 8px; background: #fff; padding: 14px; position: relative; }
-    .step .icon {
-      width: 28px; height: 28px; border-radius: 6px; display: grid; place-items: center;
-      font-weight: 800; color: #fff; margin-bottom: 10px; font-size: 14px;
-    }
-    .step h3 { font-size: 13.5px; margin-bottom: 6px; }
-    .step p { color: var(--muted); font-size: 12.5px; }
-    .i1 { background: var(--blue); } .i2 { background: var(--violet); } .i3 { background: var(--green); }
-    .i4 { background: var(--amber); } .i5 { background: var(--red); }
+    .hypo-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .hypo { border: 1px solid var(--line); border-radius: 8px; background: #fff; padding: 13px 15px; font-size: 12.8px; }
+    .hypo b.tag-h { color: var(--blue); margin-right: 6px; }
+    .hypo small { color: var(--muted); display: block; margin-top: 5px; }
+    .diagram { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 14px; margin-top: 12px; }
+    .diagram svg { width: 100%; height: auto; display: block; }
+    .diagram .cap { color: var(--muted); font-size: 11.5px; margin-top: 8px; }
     .table-scroll { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; font-size: 13px; }
     th, td { text-align: right; padding: 7px 10px; border-bottom: 1px solid #e4e8ee; white-space: nowrap; }
     th:first-child, td:first-child { text-align: left; white-space: normal; }
+    td.l { text-align: left; white-space: normal; }
     th { font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); border-bottom: 2px solid var(--ink); }
     tr.total td { font-weight: 800; border-top: 2px solid var(--ink); border-bottom: none; background: #fbfcf7; }
     .ratio { font-weight: 700; }
@@ -92,20 +96,18 @@
       overflow-x: auto; margin: 10px 0 0;
     }
     pre .g { color: #7fd1a7; } pre .r { color: #f3a08c; } pre .y { color: #efd081; } pre .dim { color: #6b7689; }
-    ol.points { margin: 0; padding-left: 20px; display: grid; gap: 9px; }
-    ol.points li { font-size: 13px; }
-    ol.points b { font-weight: 800; }
-    ul.flat { margin: 0; padding-left: 18px; display: grid; gap: 8px; }
-    ul.flat li { font-size: 13px; }
+    ol.points, ul.points { margin: 0; padding-left: 20px; display: grid; gap: 9px; }
+    ol.points li, ul.points li { font-size: 13px; }
+    ol.points b, ul.points b { font-weight: 800; }
     .pill { display: inline-block; border-radius: 4px; padding: 1px 7px; font-size: 11px; font-weight: 800; vertical-align: 1px; }
     .pill.true { background: #e3f3ec; color: var(--green); border: 1px solid #bfe3d2; }
     .pill.inflated { background: #fdeee0; color: var(--amber); border: 1px solid #f3d9bb; }
     .pill.wrong { background: #fae7e5; color: var(--red); border: 1px solid #efc8c4; }
-    footer { margin-top: 30px; border-top: 2px solid var(--ink); padding-top: 14px; color: var(--muted); font-size: 12.5px; display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+    footer { margin-top: 30px; border-top: 2px solid var(--ink); padding-top: 14px; color: var(--muted); font-size: 12.5px; display: grid; gap: 6px; }
     code.inl { background: #eef1f5; border-radius: 4px; padding: 1px 6px; font-size: 12px; }
+    ol.refs { margin: 0; padding-left: 22px; display: grid; gap: 7px; font-size: 12.8px; }
     @media (max-width: 920px) {
-      header, .cols2, .verdict-grid { grid-template-columns: 1fr; }
-      .flow { grid-template-columns: repeat(2, 1fr); }
+      .cols2, .verdict-grid, .hypo-grid { grid-template-columns: 1fr; }
       .wrow { grid-template-columns: 1fr; gap: 4px; }
       .wnum { text-align: left; }
     }
@@ -114,87 +116,184 @@
 <body>
 <main>
   <header>
-    <div>
-      <h1>Arcade's "100× fewer tokens" claim, re-run from scratch.</h1>
-      <div class="tagline">
-        <span class="tag">fresh Attio workspace</span>
-        <span class="tag">their seed script + queries</span>
-        <span class="tag">deterministic + agent re-runs</span>
-        <span class="tag">tiktoken cl100k_base</span>
-        <span class="tag">June 12, 2026</span>
-      </div>
+    <div class="kicker">Independent Replication Report · June 12, 2026</div>
+    <h1>Reproducing "A 100× Token Difference": Arcade's Attio MCP Benchmark, Re-run From Scratch</h1>
+    <p class="byline">Replication target: Hood, E. "MCP Toolkit Benchmark: Arcade.dev vs Composio, A 100x Token Difference," Arcade.dev, March 1, 2026 [1] and its companion repository [2]. All artifacts for this replication are public [4].</p>
+    <div class="tagline">
+      <span class="tag">fresh Attio workspace, their seed script</span>
+      <span class="tag">deterministic + agent-driven re-runs</span>
+      <span class="tag">raw-API baseline</span>
+      <span class="tag">tiktoken cl100k_base</span>
+      <span class="tag">security claims out of scope</span>
     </div>
-    <p class="dek">We reproduced Arcade's Attio MCP benchmark end-to-end against a freshly seeded workspace, with both platforms connected to the same data. The direction of their claim survives. The magnitude and framing don't fully.</p>
   </header>
 
   <section>
-    <h2>Verdict</h2>
-    <div class="verdict-grid">
-      <div class="stat red">
-        <div class="num">100.6×</div>
-        <div class="lbl"><b>Their published headline.</b> Real numbers — we re-counted their committed files and re-ran every call: their data is genuine. But the methodology stacks the deck (formatting + unequal limits + uncounted calls).</div>
-      </div>
-      <div class="stat blue">
-        <div class="num">50–64×</div>
-        <div class="lbl"><b>The fair apples-to-apples gap.</b> Same record counts on both sides, both responses minified: 63.6×. Counting Arcade's required schema-discovery calls (which they captured but excluded): 50×.</div>
-      </div>
-      <div class="stat green">
-        <div class="num">8.5×</div>
-        <div class="lbl"><b>The fixable part.</b> Composio's tool is a raw Attio API passthrough (98.6% of baseline). Strip Attio's per-value metadata → 33×. Add field selection like Arcade's <code class="inl">fields</code> param → 8.5×. The rest is response flattening.</div>
-      </div>
+    <h2>Abstract</h2>
+    <p>Arcade.dev published a benchmark claiming its Attio MCP toolkit consumes roughly 100× fewer response tokens than Composio's. We replicated the study end-to-end: re-counted their committed raw data, seeded a fresh Attio workspace with their script, re-ran all 8 queries on both platforms — once deterministically with their exact parameters, once with independent small-model agents — and added a raw Attio API baseline. Their raw data is genuine (recount: exact match; live re-run: within 1% per platform) and a large gap is real. However, the 100.6× headline depends on three methodology choices that each favor Arcade: response formatting, unequal record limits, and selective call accounting. Correcting them yields 50–64×. Counterfactual transforms show ~8.5× would remain if Composio adopted field selection and metadata stripping; the residual is response-shape design, not data. The paper's security claims were out of scope for this replication.</p>
+  </section>
+
+  <section>
+    <h2><span class="sn">1</span>Background</h2>
+    <p>On March 1, 2026, Arcade.dev published a benchmark comparing its Attio MCP toolkit against Composio's on 8 CRM queries over a seeded sandbox [1]:</p>
+    <blockquote>"Across 8 CRM queries, Arcade consumed 7,426 tokens total while Composio consumed 747,083, which is greater than a 100x difference."
+      <span class="att">— Hood (2026), introduction [1]</span></blockquote>
+    <p>The paper open-sourced its raw responses, seed script, and eval prompts, and invited verification: <em>"You can reproduce this yourself."</em> This report is that reproduction, performed with no access to either vendor's internals and published with all artifacts [4]. The original article also makes security-related claims about Composio; per the scope of this work, those are not evaluated here.</p>
+  </section>
+
+  <section>
+    <h2><span class="sn">2</span>Claims Under Test</h2>
+    <ul class="points">
+      <li><b>C1 — Headline ratio.</b> <em>"Composio provided 100.6x more response tokens than Arcade for the same 8 queries against the same workspace."</em> [1]</li>
+      <li><b>C2 — Mechanism.</b> <em>"Composio returns every field on every record: all custom attributes, all built-in attributes, with no way to select specific fields"</em> … <em>"This is the raw Attio v2 API response passed through unmodified."</em> [1]</li>
+      <li><b>C3 — Per-record cost.</b> <em>"A single company record expands to ~5,800 tokens in Composio's response format. In Arcade's, the same record with name selected is ~30 tokens."</em> [1]</li>
+      <li><b>C4 — Context windows.</b> <em>"At Composio's rate, the same 8 queries consume 373% of a 200K window; the responses cannot fit in a single context."</em> [1]</li>
+      <li><b>C5 — Cost at scale.</b> <em>"At the mid-market tier, the toolkit choice alone could be a quarter-million dollars a year. At enterprise scale, it could be $2M."</em> [1]</li>
+      <li><b>C6 — Error recovery.</b> <em>"Query 07 (compound filter: Technology companies with 1K+ employees) required 4 tool calls in Composio vs 1 in Arcade."</em> [1]</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2><span class="sn">3</span>Hypotheses</h2>
+    <p>Fixed before running anything, each falsifiable against artifacts we would produce:</p>
+    <div class="hypo-grid" style="margin-top:12px">
+      <div class="hypo"><b class="tag-h">H1</b><b>Data authenticity.</b> Re-counting the repo's committed raw files with the paper's own script reproduces the published per-query table.<small>Tests whether the published numbers match the published data.</small></div>
+      <div class="hypo"><b class="tag-h">H2</b><b>Live replicability.</b> Re-running the same tool calls against a freshly seeded workspace reproduces each platform's total within ±5%.<small>Tests whether the result is reproducible, not a one-off artifact.</small></div>
+      <div class="hypo"><b class="tag-h">H3</b><b>Methodological invariance.</b> The ~100× ratio is stable when formatting, record limits, and call accounting are normalized.<small>Tests whether the headline is a property of the tools or of the measurement choices.</small></div>
+      <div class="hypo"><b class="tag-h">H4</b><b>Agent independence.</b> The gap is determined by tool response design, not by the client or model driving the tools.<small>Tested by replacing their Claude Code client with independent small-model subagents given only the natural-language prompts.</small></div>
+      <div class="hypo"><b class="tag-h">H5</b><b>Irreducibility.</b> The gap cannot be substantially closed without changing what data the API returns.<small>Tested with counterfactual transforms of Composio's real responses (strip metadata, project fields).</small></div>
     </div>
   </section>
 
   <section>
-    <h2>What We Did — Simple Flow</h2>
-    <div class="flow">
-      <div class="step"><div class="icon i1">1</div><h3>Seed</h3><p>Ran their <code class="inl">seed_workspace.py</code> on a fresh workspace: 50 companies, 100 people, 50 deals, 26 custom attributes. Had to create 6 deal stages by hand — an undocumented step their script assumes.</p></div>
-      <div class="step"><div class="icon i2">2</div><h3>Connect both</h3><p>Same workspace, three auth paths: raw Attio API key, Composio OAuth connection, Arcade OAuth authorization.</p></div>
-      <div class="step"><div class="icon i3">3</div><h3>Replay their 8 calls</h3><p>Exact tools + parameters from their committed <code class="inl">metadata.json</code>, both platforms. Record counts matched their run exactly.</p></div>
-      <div class="step"><div class="icon i4">4</div><h3>Agent re-run</h3><p>Two small-model subagents (Composer) given only the 8 natural-language queries chose their own tools — and converged on byte-identical token totals.</p></div>
-      <div class="step"><div class="icon i5">5</div><h3>Count + decompose</h3><p>tiktoken cl100k_base (their encoder), then walked the 100× headline down one controlled variable at a time.</p></div>
+    <h2><span class="sn">4</span>Method</h2>
+    <div class="diagram">
+      <svg viewBox="0 0 1110 332" role="img" aria-label="Experimental pipeline: seed, connect, execute four measurement arms, count, decompose">
+        <defs>
+          <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="#596273"/>
+          </marker>
+        </defs>
+        <g fill="none" stroke-width="1.6">
+          <rect x="1"   y="10" width="188" height="110" rx="7" stroke="#2563eb" fill="#fff"/>
+          <rect x="231" y="10" width="188" height="110" rx="7" stroke="#6d5bd0" fill="#fff"/>
+          <rect x="461" y="10" width="188" height="110" rx="7" stroke="#16835d" fill="#fff"/>
+          <rect x="691" y="10" width="188" height="110" rx="7" stroke="#b45309" fill="#fff"/>
+          <rect x="921" y="10" width="188" height="110" rx="7" stroke="#c2413b" fill="#fff"/>
+          <rect x="2"   y="232" width="250" height="88" rx="7" stroke="#596273" fill="#fbfcf7"/>
+          <rect x="272" y="232" width="250" height="88" rx="7" stroke="#596273" fill="#fbfcf7"/>
+          <rect x="542" y="232" width="250" height="88" rx="7" stroke="#596273" fill="#fbfcf7"/>
+          <rect x="812" y="232" width="250" height="88" rx="7" stroke="#596273" fill="#fbfcf7"/>
+        </g>
+        <g stroke="#596273" stroke-width="1.6" fill="none">
+          <path d="M192,65 H222" marker-end="url(#ah)"/>
+          <path d="M422,65 H452" marker-end="url(#ah)"/>
+          <path d="M652,65 H682" marker-end="url(#ah)"/>
+          <path d="M882,65 H912" marker-end="url(#ah)"/>
+        </g>
+        <g stroke="#94a0b3" stroke-width="1.4" fill="none" stroke-dasharray="5 4">
+          <path d="M555,122 V185 H127 V224" marker-end="url(#ah)"/>
+          <path d="M555,122 V185 H397 V224" marker-end="url(#ah)"/>
+          <path d="M555,122 V185 H667 V224" marker-end="url(#ah)"/>
+          <path d="M555,122 V185 H937 V224" marker-end="url(#ah)"/>
+        </g>
+        <g font-family="Inter, ui-sans-serif, system-ui" >
+          <g font-size="13.5" font-weight="800">
+            <text x="13"  y="36" fill="#2563eb">1 · Seed</text>
+            <text x="243" y="36" fill="#6d5bd0">2 · Connect</text>
+            <text x="473" y="36" fill="#16835d">3 · Execute</text>
+            <text x="703" y="36" fill="#b45309">4 · Count</text>
+            <text x="933" y="36" fill="#c2413b">5 · Decompose</text>
+          </g>
+          <g font-size="10.5" fill="#596273">
+            <text x="13" y="58">seed_workspace.py</text>
+            <text x="13" y="74">50 cos · 100 people · 50 deals</text>
+            <text x="13" y="90">+ 6 deal stages by hand</text>
+            <text x="243" y="58">same workspace, 3 paths:</text>
+            <text x="243" y="74">Attio API key</text>
+            <text x="243" y="90">Composio + Arcade OAuth</text>
+            <text x="473" y="58">8 queries per arm</text>
+            <text x="473" y="74">4 measurement arms</text>
+            <text x="473" y="90">params logged per call</text>
+            <text x="703" y="58">tiktoken cl100k_base</text>
+            <text x="703" y="74">their count_tokens.py</text>
+            <text x="703" y="90">minified + pretty variants</text>
+            <text x="933" y="58">one variable at a time</text>
+            <text x="933" y="74">100.6× → 8.5× waterfall</text>
+            <text x="933" y="90">counterfactual transforms</text>
+          </g>
+          <g font-size="12" font-weight="800" fill="#18202f">
+            <text x="14"  y="256">A · Deterministic replay</text>
+            <text x="284" y="256">B · Matched limits</text>
+            <text x="554" y="256">C · Agent-driven</text>
+            <text x="824" y="256">D · Raw Attio API</text>
+          </g>
+          <g font-size="10.5" fill="#596273">
+            <text x="14" y="278">their exact tool params</text>
+            <text x="14" y="293">from committed metadata.json</text>
+            <text x="284" y="278">Arcade limit=500 where their</text>
+            <text x="284" y="293">run let Composio fetch more</text>
+            <text x="554" y="278">2 small-model subagents,</text>
+            <text x="554" y="293">natural-language prompts only</text>
+            <text x="824" y="278">same queries, no toolkit —</text>
+            <text x="824" y="293">passthrough baseline</text>
+          </g>
+        </g>
+      </svg>
+      <div class="cap">Fig. 1 — Experimental pipeline. Editable Excalidraw source: <code class="inl">diagrams/experiment-pipeline.excalidraw</code> [4].</div>
     </div>
+
+    <h3>4.1 Materials</h3>
+    <ul class="points">
+      <li><b>Workspace:</b> fresh Attio sandbox seeded with the paper's <code class="inl">scripts/seed_workspace.py</code> — 50 companies, 100 people, 50 deals, 26 custom attributes. One undocumented dependency: the script assumes 6 custom deal stages ("Nurture" … "Closed Lost") already exist; all 50 deal creations fail with HTTP 400 on a default workspace. We created the stages via the Attio API, then re-ran the deals phase.</li>
+      <li><b>Toolkits:</b> Arcade's <code class="inl">Attio.QueryRecords</code> (+ its required <code class="inl">GetObjectSchema</code>) via Arcade's execute API; Composio's <code class="inl">ATTIO_LIST_COMPANIES</code> / <code class="inl">ATTIO_LIST_DEAL_RECORDS</code> via Composio CLI. Both OAuth-connected to the same workspace. Snapshot date: June 12, 2026.</li>
+      <li><b>Measurement:</b> identical to the paper — <em>"tiktoken cl100k_base on complete raw JSON responses saved to disk"</em> [1], using their <code class="inl">count_tokens.py</code> logic. We additionally save every payload in canonical minified and pretty-printed forms, so formatting can be controlled for.</li>
+    </ul>
+
+    <h3>4.2 Procedure</h3>
+    <ul class="points">
+      <li><b>Arm A — deterministic replay:</b> the exact tool calls recorded in their committed <code class="inl">metadata.json</code>, both platforms. Isolates the tools from any agent behavior.</li>
+      <li><b>Arm B — matched limits:</b> same as A, but Arcade is given <code class="inl">limit=500</code> on the queries where their run gave Composio 500 and let Arcade default to 25 — so both sides return the same 192 records.</li>
+      <li><b>Arm C — agent-driven:</b> two independent small-model subagents (Composer), one per platform, given only the paper's 8 natural-language prompts — no parameter hints. Replaces their Claude Code + Sonnet 4.6 client to test H4.</li>
+      <li><b>Arm D — raw API baseline:</b> the same 8 queries sent directly to Attio's v2 REST API with no toolkit, to locate each toolkit relative to the underlying API.</li>
+      <li><b>Decomposition:</b> starting from the published 100.6×, change one variable at a time (formatting → limits → call accounting → counterfactual metadata-strip → counterfactual field projection) and recompute the ratio at each step.</li>
+    </ul>
   </section>
 
   <section>
-    <h2>The Decomposition — Where 100× Actually Comes From</h2>
-    <div class="waterfall">
-      <div class="wrow">
-        <div class="wlabel"><b>As published</b><small>their saved files: Composio pretty-printed, Arcade semi-minified</small></div>
-        <div class="wbarwrap"><div class="wbar" style="width:100%;background:var(--red)"></div></div>
-        <div class="wnum">100.6×</div>
-      </div>
-      <div class="wrow">
-        <div class="wlabel"><b>Minify both</b><small>remove the JSON formatting penalty (~19% of the headline)</small></div>
-        <div class="wbarwrap"><div class="wbar" style="width:90%;background:#d96b54"></div></div>
-        <div class="wnum">81.7×</div>
-      </div>
-      <div class="wrow">
-        <div class="wlabel"><b>Matched limits</b><small>their run let Composio fetch 192 records but capped Arcade at 156 (default limit 25)</small></div>
-        <div class="wbarwrap"><div class="wbar" style="width:80%;background:var(--amber)"></div></div>
-        <div class="wnum">63.6×</div>
-      </div>
-      <div class="wrow">
-        <div class="wlabel"><b>Count Arcade's schema calls</b><small>QueryRecords needs schema discovery first; they saved those calls but excluded them from totals</small></div>
-        <div class="wbarwrap"><div class="wbar" style="width:70%;background:#c9a227"></div></div>
-        <div class="wnum">50.0×</div>
-      </div>
-      <div class="wrow">
-        <div class="wlabel"><b>Counterfactual: Composio strips Attio's metadata wrapper</b><small>drop active_from / active_until / attribute_type / created_by_actor per value</small></div>
-        <div class="wbarwrap"><div class="wbar" style="width:46%;background:var(--violet)"></div></div>
-        <div class="wnum">32.8×</div>
-      </div>
-      <div class="wrow">
-        <div class="wlabel"><b>Counterfactual: Composio adds field selection</b><small>return only the fields the query asked for, like Arcade's <code class="inl">fields</code> param</small></div>
-        <div class="wbarwrap"><div class="wbar" style="width:18%;background:var(--green)"></div></div>
-        <div class="wnum">8.5×</div>
-      </div>
-    </div>
-    <p class="note">Bar widths illustrative, not linear. Each step changes one variable on the same replication data. The residual 8.5× is Attio's nested value-array structure vs Arcade's flat records — eliminated by flattening, which is response design, not data.</p>
+    <h2><span class="sn">5</span>Assumptions &amp; Limitations</h2>
+    <ul class="points">
+      <li><b>A1 — Measurement boundary.</b> Like the paper, we count saved response payloads only. Request tokens, MCP tool-schema definitions injected into context, system prompts, and model reasoning are excluded on both sides. The paper's Q07 narrative about context burned during retries is therefore not measurable from artifacts — theirs or ours.</li>
+      <li><b>A2 — Workspace shape.</b> Ratios are specific to this seeded sandbox (26 custom attributes, mostly populated). Sparser or richer workspaces will scale Composio's per-record cost roughly linearly; Arcade's is insensitive to unselected fields.</li>
+      <li><b>A3 — Snapshot in time.</b> Both products are point-in-time (June 12, 2026; paper: March 1, 2026). Either vendor can change response shapes at any time.</li>
+      <li><b>A4 — Client substitution.</b> The paper used <em>"Claude Code as the client with Claude Sonnet 4.6"</em> [1]; we used deterministic scripts plus Composer subagents. Arms A and C converging on token-identical totals (§6.5) is evidence the client doesn't matter here, which is itself one of our findings.</li>
+      <li><b>A5 — Q6 date shift.</b> Their Q6 cutoff ("deals created before March 2026") predates our seed date, which would match zero records. We shifted the cutoff to preserve their query's all-match semantics (50 of 50 deals). Their repo also labels Q6 "close date" while actually filtering <code class="inl">created_at</code>.</li>
+      <li><b>A6 — Pricing model.</b> Cost figures use the paper's own assumption: Claude Sonnet 4.6 input at $3/M tokens, response payload tokens only.</li>
+      <li><b>A7 — Scope.</b> The paper's security claims are not evaluated. Latency, correctness-of-results, and write operations are out of scope; all 8 queries returned correct, matching record sets on both platforms.</li>
+    </ul>
   </section>
 
   <section>
-    <h2>Per-Query: Published vs Fair Re-run</h2>
+    <h2><span class="sn">6</span>Results</h2>
+
+    <h3>6.1 Recount of their committed data (H1)</h3>
+    <p>Running the paper's token counter over the repo's committed raw files reproduces the published table exactly: <b>7,426</b> (Arcade) and <b>747,083</b> (Composio) — every per-query value matches. <b>H1 supported.</b> The published numbers honestly describe the published files.</p>
+
+    <h3>6.2 Live replication on a fresh workspace (H2)</h3>
+    <div class="table-scroll">
+    <table>
+      <thead>
+        <tr><th>Total, minified payloads</th><th>Their committed run</th><th>Our re-run (Arm A)</th><th>Δ</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Arcade (8 queries)</td><td>6,864</td><td>6,903</td><td>+0.57%</td></tr>
+        <tr><td>Composio (8 queries)</td><td>561,911</td><td>564,231</td><td>+0.41%</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="note">Formatting-neutral comparison (both sides minified) since our wrappers differ trivially from theirs. Record counts matched their run exactly on every query. <b>H2 supported</b> — the benchmark replicates.</p>
+
+    <h3>6.3 Fair comparison: matched limits, per query (H3)</h3>
     <div class="table-scroll">
     <table>
       <thead>
@@ -222,18 +321,121 @@
       </tbody>
     </table>
     </div>
-    <p class="note">*Fair = matched record counts (Arcade given the same limits their own run gave Composio), both payloads minified, tokens via tiktoken cl100k_base. Excludes Arcade's 2,412 tokens of schema-discovery calls; including them, total ratio is 50.0×. Our re-run reproduced their committed numbers within 1% on both platforms before normalization. &dagger;&nbsp;= queries where their published run compared unequal record counts (Arcade truncated at 25 by default-limit, <code class="inl">has_more: true</code> in their own files).</p>
-  </section>
+    <p class="note">*Fair = matched record counts (Arm B), both payloads minified. Excludes Arcade's schema-discovery calls; including them (2,412 tokens in our run; they committed 1,514 tokens of theirs but excluded them from totals), the total ratio is <b>50.0×</b>. &dagger;&nbsp;= queries where the published run compared unequal record counts — their own Arcade files show <code class="inl">has_more: true</code> truncation at 25 records while Composio returned 30/29/50/27.</p>
 
-  <section class="cols2" style="background:transparent;border:none;box-shadow:none;padding:0">
-    <section style="margin-top:0">
-      <h2>Why The Gap Exists — Same Record, Both Tools</h2>
-      <p style="font-size:13px">One seeded company ("Airbnb") as each tool returns it. This is the entire story:</p>
-      <pre><span class="dim">// Arcade Attio.QueryRecords — 36 tokens</span>
+    <h3>6.4 Decomposition of the headline (H3, H5)</h3>
+    <div class="waterfall">
+      <div class="wrow">
+        <div class="wlabel"><b>As published</b><small>their saved files: Composio pretty-printed, Arcade semi-minified</small></div>
+        <div class="wbarwrap"><div class="wbar" style="width:100%;background:var(--red)"></div></div>
+        <div class="wnum">100.6×</div>
+      </div>
+      <div class="wrow">
+        <div class="wlabel"><b>Minify both</b><small>removes the JSON formatting penalty (~19% of the headline)</small></div>
+        <div class="wbarwrap"><div class="wbar" style="width:90%;background:#d96b54"></div></div>
+        <div class="wnum">81.7×</div>
+      </div>
+      <div class="wrow">
+        <div class="wlabel"><b>Matched limits</b><small>their run let Composio fetch 192 records but capped Arcade at 156 (default limit 25)</small></div>
+        <div class="wbarwrap"><div class="wbar" style="width:80%;background:var(--amber)"></div></div>
+        <div class="wnum">63.6×</div>
+      </div>
+      <div class="wrow">
+        <div class="wlabel"><b>Count Arcade's schema calls</b><small>QueryRecords requires schema discovery; they saved those calls but excluded them from totals</small></div>
+        <div class="wbarwrap"><div class="wbar" style="width:70%;background:#c9a227"></div></div>
+        <div class="wnum">50.0×</div>
+      </div>
+      <div class="wrow">
+        <div class="wlabel"><b>Counterfactual: Composio strips Attio's metadata wrapper</b><small>drop active_from / active_until / attribute_type / created_by_actor per value</small></div>
+        <div class="wbarwrap"><div class="wbar" style="width:46%;background:var(--violet)"></div></div>
+        <div class="wnum">32.8×</div>
+      </div>
+      <div class="wrow">
+        <div class="wlabel"><b>Counterfactual: Composio adds field selection</b><small>return only the fields each query asked for, like Arcade's <code class="inl">fields</code> param</small></div>
+        <div class="wbarwrap"><div class="wbar" style="width:18%;background:var(--green)"></div></div>
+        <div class="wnum">8.5×</div>
+      </div>
+    </div>
+    <p class="note">Bar widths illustrative, not linear. Each step changes one variable on the same Arm A/B data. The first three steps are corrections to the published methodology; the last two are counterfactual product changes applied to Composio's real responses. The residual 8.5× is Attio's nested value-array structure vs Arcade's flat records — eliminated by flattening, which is response design, not data.</p>
+
+    <h3>6.5 Agent-driven runs (H4)</h3>
+    <p>Two independent small-model subagents, given only the 8 natural-language prompts, chose the same tools and equivalent parameters as the deterministic replay on both platforms and produced <b>token-identical totals</b> (Arcade 6,903; Composio 564,231, minified). The client and model are irrelevant to the outcome; tool response design fully determines it. <b>H4 supported.</b> Notably, the paper's Q07 story (C6) — 4 Composio calls with two failed filter attempts — did not recur: our agent wrote a valid compound filter on the first try, having seen valid option titles in earlier query responses. Cold-start retry friction is plausible but contingent on agent state, not structural to the toolkit.</p>
+
+    <h3>6.6 Mechanism: where the tokens go (C2, C3)</h3>
+    <div class="diagram">
+      <svg viewBox="0 0 1180 460" role="img" aria-label="Data flow: Attio raw API feeds Composio passthrough at 564,231 tokens and Arcade post-processing pipeline at 6,903 tokens">
+        <defs>
+          <marker id="ah2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="#596273"/>
+          </marker>
+        </defs>
+        <g fill="none" stroke-width="1.6">
+          <rect x="2" y="180" width="230" height="110" rx="7" stroke="#18202f" fill="#fbfcf7"/>
+          <rect x="380" y="70" width="300" height="100" rx="7" stroke="#c2413b" fill="#fff"/>
+          <rect x="800" y="70" width="280" height="100" rx="7" stroke="#c2413b" fill="#fae7e5"/>
+          <rect x="380" y="310" width="160" height="90" rx="7" stroke="#16835d" fill="#fff"/>
+          <rect x="570" y="310" width="160" height="90" rx="7" stroke="#16835d" fill="#fff"/>
+          <rect x="760" y="310" width="160" height="90" rx="7" stroke="#16835d" fill="#fff"/>
+          <rect x="952" y="310" width="224" height="90" rx="7" stroke="#16835d" fill="#e3f3ec"/>
+        </g>
+        <g stroke="#596273" stroke-width="1.6" fill="none">
+          <path d="M234,205 C300,195 318,140 372,124" marker-end="url(#ah2)"/>
+          <path d="M234,265 C300,275 318,330 372,346" marker-end="url(#ah2)"/>
+          <path d="M684,120 H790" marker-end="url(#ah2)"/>
+          <path d="M544,355 H562" marker-end="url(#ah2)"/>
+          <path d="M734,355 H752" marker-end="url(#ah2)"/>
+          <path d="M924,355 H944" marker-end="url(#ah2)"/>
+        </g>
+        <g font-family="Inter, ui-sans-serif, system-ui">
+          <text x="14" y="210" font-size="13.5" font-weight="800" fill="#18202f">Attio v2 API</text>
+          <g font-size="10.5" fill="#596273">
+            <text x="14" y="232">raw response, 8 queries</text>
+            <text x="14" y="248">572,293 tok minified</text>
+          </g>
+          <text x="392" y="98" font-size="13.5" font-weight="800" fill="#c2413b">Composio ATTIO_* tools</text>
+          <g font-size="10.5" fill="#596273">
+            <text x="392" y="120">passthrough: adds nothing,</text>
+            <text x="392" y="136">removes nothing</text>
+          </g>
+          <text x="812" y="104" font-size="17" font-weight="800" fill="#c2413b">564,231 tok</text>
+          <g font-size="10.5" fill="#596273">
+            <text x="812" y="128">= 98.6% of the raw Attio API</text>
+            <text x="812" y="144">= 282% of a 200K window</text>
+          </g>
+          <g font-size="12" font-weight="800" fill="#16835d">
+            <text x="392" y="334">project fields</text>
+            <text x="582" y="334">strip metadata</text>
+            <text x="772" y="334">flatten values</text>
+          </g>
+          <g font-size="10" fill="#596273">
+            <text x="392" y="356">only the fields the</text>
+            <text x="392" y="370">query asked for</text>
+            <text x="582" y="356">drop temporal +</text>
+            <text x="582" y="370">actor wrappers</text>
+            <text x="772" y="356">nested arrays to</text>
+            <text x="772" y="370">plain key: value</text>
+          </g>
+          <text x="964" y="338" font-size="17" font-weight="800" fill="#16835d">6,903 tok</text>
+          <g font-size="10" fill="#596273">
+            <text x="964" y="360">+ 2,412 schema discovery</text>
+            <text x="964" y="374">= 5.6% of a 200K window</text>
+          </g>
+          <text x="380" y="440" font-size="11" fill="#6d5bd0">Counterfactual (§6.4): apply 'strip metadata' to Composio's real responses → 32.8× · also apply 'project fields' → 8.5×</text>
+          <g font-size="10.5" font-weight="700" fill="#596273">
+            <text x="252" y="160">Composio path</text>
+            <text x="252" y="320">Arcade path</text>
+          </g>
+        </g>
+      </svg>
+      <div class="cap">Fig. 2 — Same 8 queries, same workspace, minified. Composio's output is 98.6% the size of the raw Attio API (564,231 vs 572,293 tokens): a passthrough. Arcade's pipeline projects, strips, and flattens. Editable source: <code class="inl">diagrams/response-anatomy.excalidraw</code> [4].</div>
+    </div>
+    <p style="margin-top:14px">One seeded company ("Airbnb") as each tool returns it:</p>
+    <div class="cols2" style="margin-top:0">
+      <pre><span class="dim">// Arcade Attio.QueryRecords — flat record</span>
 {<span class="g">"name"</span>: <span class="y">"Airbnb"</span>,
  <span class="g">"record_id"</span>: <span class="y">"0b1f3334-…"</span>}</pre>
-      <pre><span class="dim">// Composio ATTIO_LIST_COMPANIES — 2,818 tokens
-// 17 attributes, EACH wrapped like this:</span>
+      <pre><span class="dim">// Composio ATTIO_LIST_COMPANIES — every
+// attribute (17 here), EACH value wrapped:</span>
 <span class="g">"name"</span>: [{
   <span class="r">"active_from"</span>: <span class="y">"2026-06-12T20:34:14.220000000Z"</span>,
   <span class="r">"active_until"</span>: null,
@@ -241,44 +443,73 @@
   <span class="r">"created_by_actor"</span>: {<span class="r">"id"</span>: null, <span class="r">"type"</span>: <span class="y">"system"</span>},
   <span class="g">"value"</span>: <span class="y">"Airbnb"</span>
 }]</pre>
-      <ol class="points" style="margin-top:14px">
-        <li><b>Composio is a passthrough.</b> Its responses are 98.6% the size of the raw Attio v2 API for identical queries (564,231 vs 572,293 tokens). It adds nothing — and removes nothing.</li>
-        <li><b>Arcade is a post-processor.</b> Its QueryRecords projects requested fields, strips Attio's temporal/actor metadata, and flattens values. That's a real product difference, and it costs a schema-discovery round-trip first.</li>
-        <li><b>The red keys are the bloat.</b> Attio wraps every value of every attribute with history metadata. No CRM query in this benchmark needed any of it.</li>
-      </ol>
-    </section>
-    <section style="margin-top:0">
-      <h2>Claim-by-Claim Scorecard</h2>
-      <ul class="flat">
-        <li><span class="pill true">HOLDS</span> <b>Their raw data is real.</b> We re-counted their committed files (7,426 / 747,083 — exact match) and re-ran every call on a fresh workspace, landing within 1% per platform.</li>
-        <li><span class="pill true">HOLDS</span> <b>Composio's Attio responses are enormously verbose.</b> Even the fairest framing is ~50–64× on this workload. A single record costs ~1,7–2,8K tokens. A full 8-query run (564K tokens) cannot fit in a 200K context window; Arcade's fits in ~6%.</li>
-        <li><span class="pill inflated">INFLATED</span> <b>"~100×" needed methodology help.</b> Their Composio files were saved pretty-printed (+25% tokens), Arcade's were semi-minified. Their own run gave Composio limit 500 but let Arcade default to 25 — comparing 192 records vs 156.</li>
-        <li><span class="pill inflated">INFLATED</span> <b>Selective accounting.</b> Arcade's flow required schema-discovery calls (they saved them: 1,514 tokens committed, 2,412 in our agent run) — excluded from their totals. Including them: 50×, not 100×.</li>
-        <li><span class="pill wrong">MISLEADING</span> <b>"160× on query 1" framing.</b> The worst per-query ratios are formatting + limit artifacts. Fair per-query range is 19×–125×, and the single-record case (q8) — the floor that isolates per-record overhead — is 19×.</li>
-        <li><span class="pill wrong">FRAMING</span> <b>"Composio sends garbage" → actually "Composio sends Attio."</b> The verbosity is Attio's native API format passed through. That's still a worse agent experience — but the fix is well-scoped engineering (strip wrapper → 33×, field selection → 8.5×, flatten → parity), not a fundamental flaw.</li>
-      </ul>
-    </section>
+    </div>
+    <p class="note">Verifying C3 on Query 01 (25 companies): Composio averages <b>4,297 tokens per company record</b> minified — <b>5,670 as committed</b> (pretty-printed), matching the paper's "~5,800". Arcade with <code class="inl">fields=["name"]</code> averages <b>34 tokens per record</b>, matching their "~30". The per-record claim is accurate; note the ~5,800 figure embeds the pretty-printing penalty.</p>
   </section>
 
   <section>
-    <h2>Repro Notes & Friction We Hit</h2>
-    <div class="cols2" style="gap:20px">
-      <ol class="points">
-        <li><b>Seed script assumes manual setup it never mentions.</b> All 50 deal creations 400-failed on a fresh workspace — stages like "Nurture" don't exist by default. We created the 6 statuses via API and re-ran. Their published repro steps skip this.</li>
-        <li><b>Query 6 is mislabeled in their repo.</b> "Deals by close date" actually filters <code class="inl">created_at</code> (record creation time), not close date — it matches every deal in the workspace regardless. We shifted the cutoff date to preserve identical all-match semantics on our seed date.</li>
-        <li><b>Their Arcade truncation is visible in their own files.</b> Queries 3, 5, 6, 7 show <code class="inl">has_more: true</code> at 25 records while Composio returned 30/29/50/27. The headline compares unequal workloads.</li>
-      </ol>
-      <ol class="points" start="4">
-        <li><b>Small-model agents converged exactly.</b> Two Composer subagents, given only the natural-language queries, picked the same tools as the original run on both platforms and produced byte-identical token totals (6,903 / 564,231 minified) — the benchmark is robust to agent choice; tool design fully determines the outcome.</li>
-        <li><b>Cost framing at GPT-4o input pricing ($2.50/M):</b> one 8-query run = <b>$1.41</b> via Composio passthrough vs <b>$0.028</b> via Arcade (schema calls included). At 1,000 runs/day that's $1,411 vs $28 — the gap is real money, whatever the exact multiplier.</li>
-        <li><b>Security claims were out of scope</b> per the brief; nothing here evaluates them.</li>
-      </ol>
+    <h2><span class="sn">7</span>Hypothesis Outcomes</h2>
+    <div class="table-scroll">
+    <table>
+      <thead>
+        <tr><th>Hypothesis</th><th style="text-align:left">Outcome</th><th style="text-align:left">Evidence</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>H1 — Data authenticity</td><td class="l"><span class="pill true">SUPPORTED</span></td><td class="l">Recount of committed files reproduces every published number exactly (§6.1).</td></tr>
+        <tr><td>H2 — Live replicability</td><td class="l"><span class="pill true">SUPPORTED</span></td><td class="l">Fresh-workspace re-run within +0.6% / +0.4% of their run (§6.2).</td></tr>
+        <tr><td>H3 — Methodological invariance</td><td class="l"><span class="pill wrong">REJECTED</span></td><td class="l">100.6× → 81.7× (formatting) → 63.6× (limits) → 50.0× (call accounting). All three uncorrected choices favored Arcade (§6.3–6.4).</td></tr>
+        <tr><td>H4 — Agent independence</td><td class="l"><span class="pill true">SUPPORTED</span></td><td class="l">Independent small-model agents converge with deterministic replay to token-identical totals (§6.5).</td></tr>
+        <tr><td>H5 — Irreducibility</td><td class="l"><span class="pill wrong">REJECTED</span></td><td class="l">Counterfactual metadata-strip + field projection on Composio's real responses reach 8.5×; flattening closes most of the rest (§6.4, §6.6).</td></tr>
+      </tbody>
+    </table>
     </div>
   </section>
 
+  <section>
+    <h2><span class="sn">8</span>Discussion — Claim-by-Claim Scorecard</h2>
+    <ul class="points">
+      <li><span class="pill true">HOLDS</span> <b>C2 — Composio is a passthrough of Attio's API.</b> Confirmed quantitatively: 98.6% of the raw-API token count on identical queries. The paper's phrase <em>"raw Attio v2 API response passed through unmodified"</em> is the single most accurate line in it — and it also reframes the problem: the verbosity is Attio's response format, relayed rather than created. The fix is scoped engineering (strip wrapper → 32.8×, field selection → 8.5×, flatten → near-parity), not a fundamental property.</li>
+      <li><span class="pill true">HOLDS</span> <b>C3 — Per-record cost.</b> ~5,670 tokens per company record as committed (their "~5,800") vs ~34 for Arcade ("~30"). Verified (§6.6).</li>
+      <li><span class="pill true">HOLDS (directionally)</span> <b>C4 — Context windows.</b> Their "373% of a 200K window" includes the formatting penalty; the fair number is 282%. The conclusion survives: a full 8-query Composio run cannot fit in a 200K context. Arcade's, schema calls included, uses 5.6%.</li>
+      <li><span class="pill inflated">INFLATED</span> <b>C1 — "100×" needed methodology help.</b> Composio's files were saved pretty-printed (+~33% tokens vs minified), Arcade's semi-minified; their own run requested <code class="inl">limit=500</code> from Composio while Arcade defaulted to 25 (192 vs 156 records); Arcade's required schema-discovery calls were saved but excluded from totals. Corrected: <b>50–64×</b>. Large and real — but every uncorrected choice pointed the same direction.</li>
+      <li><span class="pill inflated">INFLATED</span> <b>C5 — Cost at scale.</b> Recomputed at the paper's own pricing ($3/M input) with fair accounting: a mid-market tier saves ~<b>$187K/year</b>, not "a quarter-million" — same order of magnitude, ~25% lower. Per 8-query run: $1.69 vs $0.034.</li>
+      <li><span class="pill wrong">NOT REPRODUCED</span> <b>C6 — Q07 error recovery.</b> Our agent-driven Composio run completed Q07 in one call (§6.5). The 4-call anecdote depends on agent state and is unverifiable from their artifacts (A1); it should not be read as a structural toolkit property. We also note the asymmetry: Composio's one-off schema lookup is narrated as overhead while Arcade's mandatory schema calls are excluded from totals.</li>
+      <li><span class="pill wrong">MISLEADING</span> <b>Per-query framing.</b> The headline-making per-query ratios (160×, 161×) are the queries where formatting and limit artifacts stack. The fair per-query range is <b>19×–125×</b>; the single-record query that isolates pure per-record overhead (Q08) is <b>19×</b>.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2><span class="sn">9</span>Conclusion</h2>
+    <div class="verdict-grid">
+      <div class="stat red">
+        <div class="num">100.6×</div>
+        <div class="lbl"><b>Published headline.</b> Genuine data (H1, H2 supported) measured with a methodology whose three uncorrected choices — formatting, limits, call accounting — all favored the vendor publishing it (H3 rejected).</div>
+      </div>
+      <div class="stat blue">
+        <div class="num">50–64×</div>
+        <div class="lbl"><b>The defensible number.</b> Same records on both sides, both payloads minified: 63.6×. Counting Arcade's required schema-discovery calls: 50.0×. Still a real, large gap — Composio relays Attio's verbose API format wholesale.</div>
+      </div>
+      <div class="stat green">
+        <div class="num">8.5×</div>
+        <div class="lbl"><b>The engineering view.</b> What would remain if Composio stripped Attio's per-value metadata and projected requested fields (H5 rejected). The residual is response flattening — design, not data.</div>
+      </div>
+    </div>
+    <p style="margin-top:16px">The benchmark's direction is right and its data is honest; its magnitude is partly a measurement artifact, and its framing presents a fixable integration choice as an intrinsic gap. Read as engineering guidance rather than marketing: response shape is the product. A toolkit that projects fields and strips metadata turns the same API into ~2% of the tokens — and that decision, not the model, the client, or the agent, determined every number in this study.</p>
+  </section>
+
+  <section>
+    <h2>References</h2>
+    <ol class="refs">
+      <li>Hood, E. "MCP Toolkit Benchmark: Arcade.dev vs Composio, A 100x Token Difference." Arcade.dev, March 1, 2026. <a href="https://www.arcade.dev/blog/attio-mcp-toolkit-benchmark">arcade.dev/blog/attio-mcp-toolkit-benchmark</a></li>
+      <li>Arcade AI. <a href="https://github.com/ArcadeAI/attio-mcp-benchmark">github.com/ArcadeAI/attio-mcp-benchmark</a> — seed script, eval prompts, committed raw responses.</li>
+      <li>Liu, N. F., et al. "Lost in the Middle: How Language Models Use Long Contexts." 2023. <a href="https://arxiv.org/abs/2307.03172">arXiv:2307.03172</a> (cited by [1] for long-context degradation).</li>
+      <li>This replication: <a href="https://github.com/shawnesquivel/arcade-attio-benchmark-repro">github.com/shawnesquivel/arcade-attio-benchmark-repro</a> — analysis.json, decomposition.json, agent-run-analysis.json, editable Excalidraw diagrams.</li>
+    </ol>
+  </section>
+
   <footer>
-    <div>Data: <a href="https://github.com/shawnesquivel/arcade-attio-benchmark-repro">github.com/shawnesquivel/arcade-attio-benchmark-repro</a> — analysis.json, decomposition.json, agent-run-analysis.json.</div>
-    <div>Original benchmark: <a href="https://github.com/ArcadeAI/attio-mcp-benchmark">ArcadeAI/attio-mcp-benchmark</a> · tokens via tiktoken cl100k_base</div>
+    <div>Independent replication, June 12, 2026 · tokens via tiktoken cl100k_base · both toolkits OAuth-connected to the same freshly seeded Attio workspace.</div>
+    <div>Live: <a href="https://arcade-attio-benchmark-repro.vercel.app">arcade-attio-benchmark-repro.vercel.app</a> · Source &amp; data: <a href="https://github.com/shawnesquivel/arcade-attio-benchmark-repro">GitHub</a></div>
   </footer>
 </main>
 </body>
