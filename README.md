@@ -29,11 +29,20 @@ An independent, end-to-end reproduction of [Arcade's attio-mcp-benchmark](https:
 3. Replayed the exact 8 tool calls from their committed `metadata.json` on both platforms (deterministic run), plus an agent-driven run where two small-model subagents chose tools themselves — both runs converged on identical token totals.
 4. Counted tokens with `tiktoken` `cl100k_base` (their encoder), then decomposed the headline one controlled variable at a time.
 
+## Beyond the replication
+
+The report also covers what the paper omitted:
+
+- **Platform economics (§9):** published pricing side by side (Arcade Hobby/Growth vs Composio Free/$29/$229), all-in cost per run at three model price points (12.7× at $3/M, flipping below ≈$0.18/M), monthly TCO at the paper's own scale tiers, and what reproducing the study costs ($0 in platform fees).
+- **Multi-toolkit eval pilot (§10):** tool-definition context overhead measured across Attio, Gmail, GitHub, and Slack, plus a registered protocol for extending the response benchmark beyond one CRM.
+
 ## Files
 
-- `index.html` — the one-page explainer with all tables and the scorecard
+- `index.html` — the full report (live at the link above)
 - `analysis.json` — per-query token counts across all variants (their committed data, our replication, matched limits, raw Attio API baseline)
 - `decomposition.json` — the step-by-step waterfall totals and per-query breakdowns
 - `agent-run-analysis.json` — token counts from the agent-driven (small model) runs
+- `definition-tokens.json` — tool-definition token census across 4 toolkits on both platforms
+- `diagrams/` — editable Excalidraw sources for the report figures
 
 Security-related claims in Arcade's article were out of scope for this reproduction.

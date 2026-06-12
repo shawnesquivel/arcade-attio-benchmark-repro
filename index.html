@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Reproducing "A 100× Token Difference" — Independent Replication Report</title>
+  <title>Token Economics of MCP Toolkits — Replicating Arcade's "100×" Attio Benchmark, and Toward a Real Eval</title>
   <style>
     :root {
       color-scheme: light;
@@ -56,9 +56,10 @@
       background: #f2f6ff; border-radius: 0 6px 6px 0; font-size: 13.5px; font-style: italic; color: #243044;
     }
     blockquote .att { display: block; margin-top: 6px; font-style: normal; font-size: 11.5px; color: var(--muted); }
-    .verdict-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .verdict-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
     .stat { border: 1px solid var(--line); border-radius: 8px; padding: 16px 18px; background: #fff; }
-    .stat .num { font-size: 38px; font-weight: 800; line-height: 1; }
+    .stat .num { font-size: 33px; font-weight: 800; line-height: 1; }
+    .stat.violet .num { color: var(--violet); }
     .stat .lbl { color: var(--muted); font-size: 12.5px; margin-top: 8px; line-height: 1.4; }
     .stat.blue .num { color: var(--blue); }
     .stat.green .num { color: var(--green); }
@@ -116,21 +117,23 @@
 <body>
 <main>
   <header>
-    <div class="kicker">Independent Replication Report · June 12, 2026</div>
-    <h1>Reproducing "A 100× Token Difference": Arcade's Attio MCP Benchmark, Re-run From Scratch</h1>
-    <p class="byline">Replication target: Hood, E. "MCP Toolkit Benchmark: Arcade.dev vs Composio, A 100x Token Difference," Arcade.dev, March 1, 2026 [1] and its companion repository [2]. All artifacts for this replication are public [4].</p>
+    <div class="kicker">Independent Replication &amp; Eval Report · June 12, 2026</div>
+    <h1>Token Economics of MCP Toolkits: Replicating Arcade's "100×" Attio Benchmark — and Building Toward a Real Eval</h1>
+    <p class="byline">Replication target: Hood, E. "MCP Toolkit Benchmark: Arcade.dev vs Composio, A 100x Token Difference," Arcade.dev, March 1, 2026 [1] and its companion repository [2]. Extended with platform pricing analysis [5][6], an all-in cost model, and a cross-toolkit pilot. All artifacts are public [4].</p>
     <div class="tagline">
       <span class="tag">fresh Attio workspace, their seed script</span>
       <span class="tag">deterministic + agent-driven re-runs</span>
       <span class="tag">raw-API baseline</span>
+      <span class="tag">platform pricing + all-in TCO</span>
+      <span class="tag">4-toolkit definition pilot</span>
       <span class="tag">tiktoken cl100k_base</span>
-      <span class="tag">security claims out of scope</span>
     </div>
   </header>
 
   <section>
     <h2>Abstract</h2>
-    <p>Arcade.dev published a benchmark claiming its Attio MCP toolkit consumes roughly 100× fewer response tokens than Composio's. We replicated the study end-to-end: re-counted their committed raw data, seeded a fresh Attio workspace with their script, re-ran all 8 queries on both platforms — once deterministically with their exact parameters, once with independent small-model agents — and added a raw Attio API baseline. Their raw data is genuine (recount: exact match; live re-run: within 1% per platform) and a large gap is real. However, the 100.6× headline depends on three methodology choices that each favor Arcade: response formatting, unequal record limits, and selective call accounting. Correcting them yields 50–64×. Counterfactual transforms show ~8.5× would remain if Composio adopted field selection and metadata stripping; the residual is response-shape design, not data. The paper's security claims were out of scope for this replication.</p>
+    <p>Arcade.dev published a benchmark claiming its Attio MCP toolkit consumes roughly 100× fewer response tokens than Composio's. We replicated the study end-to-end: re-counted their committed raw data, seeded a fresh Attio workspace with their script, re-ran all 8 queries on both platforms — once deterministically with their exact parameters, once with independent small-model agents — and added a raw Attio API baseline. Their raw data is genuine (recount: exact match; live re-run: within 1% per platform) and a large gap is real. However, the 100.6× headline depends on three methodology choices that each favor Arcade: response formatting, unequal record limits, and selective call accounting. Correcting them yields 50–64×. Counterfactual transforms show ~8.5× would remain if Composio adopted field selection and metadata stripping; the residual is response-shape design, not data.</p>
+    <p style="margin-top:10px">We then extend the study along two axes the paper omitted. First, <b>platform economics</b>: token bills go to the model provider, platform fees to the toolkit vendor, and the two move oppositely — Composio's $29 tier includes 100× more tool calls than Arcade's $25 tier (200,000 vs 2,000) while Arcade's per-execution overage is ~33× Composio's per call. All-in, at the paper's own $3/M model pricing, the workload costs ~12.7× more on Composio — not 100× — and the ordering inverts for models cheaper than ≈$0.18/M input. Second, a <b>multi-toolkit pilot</b>: measuring tool-definition context overhead across Attio, Gmail, GitHub, and Slack, plus a registered protocol for extending the response benchmark beyond one CRM. The paper's security claims remain out of scope.</p>
   </section>
 
   <section>
@@ -268,7 +271,7 @@
       <li><b>A3 — Snapshot in time.</b> Both products are point-in-time (June 12, 2026; paper: March 1, 2026). Either vendor can change response shapes at any time.</li>
       <li><b>A4 — Client substitution.</b> The paper used <em>"Claude Code as the client with Claude Sonnet 4.6"</em> [1]; we used deterministic scripts plus Composer subagents. Arms A and C converging on token-identical totals (§6.5) is evidence the client doesn't matter here, which is itself one of our findings.</li>
       <li><b>A5 — Q6 date shift.</b> Their Q6 cutoff ("deals created before March 2026") predates our seed date, which would match zero records. We shifted the cutoff to preserve their query's all-match semantics (50 of 50 deals). Their repo also labels Q6 "close date" while actually filtering <code class="inl">created_at</code>.</li>
-      <li><b>A6 — Pricing model.</b> Cost figures use the paper's own assumption: Claude Sonnet 4.6 input at $3/M tokens, response payload tokens only.</li>
+      <li><b>A6 — Pricing model.</b> Token cost figures use the paper's own assumption: Claude Sonnet 4.6 input at $3/M tokens, response payload tokens only. Platform pricing in §9 is taken from each vendor's public pricing page as of June 12, 2026 [5][6]; we assume the benchmark's tools bill at <em>standard</em> rates on both platforms (Arcade also sells "pro" executions at $0.50, Composio reportedly bills "premium" tools at ~3× — neither vendor publishes which tools qualify; §9.3 includes the sensitivity).</li>
       <li><b>A7 — Scope.</b> The paper's security claims are not evaluated. Latency, correctness-of-results, and write operations are out of scope; all 8 queries returned correct, matching record sets on both platforms.</li>
     </ul>
   </section>
@@ -472,14 +475,118 @@
       <li><span class="pill true">HOLDS</span> <b>C3 — Per-record cost.</b> ~5,670 tokens per company record as committed (their "~5,800") vs ~34 for Arcade ("~30"). Verified (§6.6).</li>
       <li><span class="pill true">HOLDS (directionally)</span> <b>C4 — Context windows.</b> Their "373% of a 200K window" includes the formatting penalty; the fair number is 282%. The conclusion survives: a full 8-query Composio run cannot fit in a 200K context. Arcade's, schema calls included, uses 5.6%.</li>
       <li><span class="pill inflated">INFLATED</span> <b>C1 — "100×" needed methodology help.</b> Composio's files were saved pretty-printed (+~33% tokens vs minified), Arcade's semi-minified; their own run requested <code class="inl">limit=500</code> from Composio while Arcade defaulted to 25 (192 vs 156 records); Arcade's required schema-discovery calls were saved but excluded from totals. Corrected: <b>50–64×</b>. Large and real — but every uncorrected choice pointed the same direction.</li>
-      <li><span class="pill inflated">INFLATED</span> <b>C5 — Cost at scale.</b> Recomputed at the paper's own pricing ($3/M input) with fair accounting: a mid-market tier saves ~<b>$187K/year</b>, not "a quarter-million" — same order of magnitude, ~25% lower. Per 8-query run: $1.69 vs $0.034.</li>
+      <li><span class="pill inflated">INFLATED</span> <b>C5 — Cost at scale.</b> Recomputed at the paper's own pricing ($3/M input) with fair token counts: ~$187K/year saved at the mid-market tier on the token bill alone, and ~<b>$176K/year all-in</b> once platform fees enter (§9.3) — not "a quarter-million." Same order of magnitude, ~30% lower. Per 8-query run: $1.69 vs $0.034 in tokens.</li>
       <li><span class="pill wrong">NOT REPRODUCED</span> <b>C6 — Q07 error recovery.</b> Our agent-driven Composio run completed Q07 in one call (§6.5). The 4-call anecdote depends on agent state and is unverifiable from their artifacts (A1); it should not be read as a structural toolkit property. We also note the asymmetry: Composio's one-off schema lookup is narrated as overhead while Arcade's mandatory schema calls are excluded from totals.</li>
       <li><span class="pill wrong">MISLEADING</span> <b>Per-query framing.</b> The headline-making per-query ratios (160×, 161×) are the queries where formatting and limit artifacts stack. The fair per-query range is <b>19×–125×</b>; the single-record query that isolates pure per-record overhead (Q08) is <b>19×</b>.</li>
     </ul>
   </section>
 
   <section>
-    <h2><span class="sn">9</span>Conclusion</h2>
+    <h2><span class="sn">9</span>Platform Economics: Pricing, Usage, and All-In Cost</h2>
+    <p>The paper prices only LLM input tokens. But an agent workload pays two different parties: <b>token costs go to the model provider; platform fees go to the toolkit vendor.</b> These move in opposite directions here, so an apples-to-apples comparison must include both.</p>
+
+    <h3>9.1 Published pricing, side by side</h3>
+    <div class="table-scroll">
+    <table>
+      <thead>
+        <tr><th>Axis</th><th style="text-align:left">Arcade [6]</th><th style="text-align:left">Composio [5]</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Free tier</td><td class="l">Hobby — $0: 1,000 standard tool executions/mo, 50 pro executions, 100 user auth challenges, 1 hosted + 5 self-hosted servers</td><td class="l">Totally Free — $0: 20,000 tool calls/mo, full catalog, community support</td></tr>
+        <tr><td>Entry paid tier</td><td class="l">Growth — $25/mo: 2,000 standard executions, then <b>$0.01/execution</b>; 100 pro executions, then $0.50; 600 auth challenges, then $0.05; hosted servers $0.05/server-hour</td><td class="l">Ridiculously Cheap — $29/mo: 200,000 calls, then <b>$0.299/1K</b> (~$0.0003/call)</td></tr>
+        <tr><td>Volume tier</td><td class="l">Enterprise — custom volume pricing</td><td class="l">Serious Business — $229/mo: 2,000,000 calls, then $0.249/1K; Enterprise — custom</td></tr>
+        <tr><td>Included calls at the ~$25–29 tier</td><td class="l">2,000 (80 calls per $)</td><td class="l">200,000 (~6,900 calls per $) — <b>100× more included volume</b></td></tr>
+        <tr><td>Marginal overage price (standard)</td><td class="l">$10.00 per 1K executions</td><td class="l">$0.299 per 1K calls — <b>Arcade's per-call overage is ~33× higher</b></td></tr>
+        <tr><td>8-query benchmark runs covered free</td><td class="l">100 runs/mo (10 executions/run, incl. schema calls)</td><td class="l">2,500 runs/mo (8 calls/run)</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="note">Snapshot June 12, 2026. Auth/user-challenge metering exists only on Arcade's side; Composio does not meter connected-account challenges separately. "Pro"/"premium" tool classifications are unpublished on both sides (A6).</p>
+
+    <h3>9.2 What one benchmark run actually costs</h3>
+    <p>Marginal cost per 8-query run (fair, minified workload: Arcade 11,283 payload tokens over 10 executions; Composio 564,231 tokens over 8 calls), at three model input prices, <em>beyond</em> included plan volumes:</p>
+    <div class="table-scroll">
+    <table>
+      <thead>
+        <tr><th>Model input price</th><th>Arcade LLM</th><th>Arcade all-in*</th><th>Composio LLM</th><th>Composio all-in*</th><th>All-in ratio</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>$3.00/M — Sonnet 4.6, the paper's assumption</td><td>$0.034</td><td>$0.134</td><td>$1.693</td><td>$1.695</td><td class="ratio bad">12.7× Composio</td></tr>
+        <tr><td>$0.30/M — small frontier model</td><td>$0.003</td><td>$0.103</td><td>$0.169</td><td>$0.172</td><td class="ratio mid">1.7× Composio</td></tr>
+        <tr><td>$0.05/M — budget model</td><td>$0.0006</td><td>$0.101</td><td>$0.028</td><td>$0.031</td><td class="ratio ok">3.3× Arcade</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="note">*All-in = LLM input + platform overage (Arcade 10 × $0.01 = $0.10/run; Composio 8 × $0.000299 = $0.0024/run). The two cost structures cross at ≈<b>$0.18/M</b>: above it, token efficiency dominates and Arcade is cheaper; below it, per-execution fees dominate and Composio is cheaper. Within included plan volumes the platform marginal cost is $0 on both sides, leaving only the token bill — where the fair ratio is 50× at any model price.</p>
+
+    <h3>9.3 Monthly totals at the paper's own scale tiers</h3>
+    <p>The paper's cost table multiplies its 100× token ratio by Sonnet pricing and ignores platform fees. Recomputed all-in with fair token counts (§6.3) and published pricing:</p>
+    <div class="table-scroll">
+    <table>
+      <thead>
+        <tr><th>Scale tier (from the paper)</th><th>Queries/mo</th><th>Arcade platform</th><th>Arcade LLM</th><th>Arcade total</th><th>Composio platform</th><th>Composio LLM</th><th>Composio total</th><th>Fair saving/mo</th><th>Their claim</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Small team</td><td>15,000</td><td>$193</td><td>$63</td><td>$256</td><td>$0 (free tier)</td><td>$3,174</td><td>$3,174</td><td>$2,918</td><td>$4,161</td></tr>
+        <tr><td>Mid-market</td><td>75,000</td><td>$943</td><td>$317</td><td>$1,260</td><td>$29</td><td>$15,869</td><td>$15,898</td><td>$14,638</td><td>$20,803</td></tr>
+        <tr><td>Enterprise</td><td>600,000</td><td>$7,505&dagger;</td><td>$2,539</td><td>$10,044</td><td>$229</td><td>$126,952</td><td>$127,181</td><td>$117,137</td><td>$166,423</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="note">$3/M input; Arcade on Growth (1.25 executions/query incl. amortized schema calls), Composio on the smallest sufficient plan. &dagger;Extrapolating $0.01/execution to 750K executions is unrealistic — Arcade's enterprise tier is custom; treat as illustrative. <b>Reading:</b> the paper's "quarter-million dollars a year" mid-market claim becomes ~<b>$176K/year</b> all-in with fair counts — still large, ~30% lower, and entirely a token-bill effect: platform fees are noise at Sonnet pricing ($943 vs $29 against a $15.9K token bill). <b>Sensitivity (A6):</b> if CRM tools billed at Arcade's "pro" rate ($0.50/execution), Arcade's mid-market platform cost alone would be ~$46.9K/mo — the ordering flips. The standard-vs-pro classification is load-bearing and unpublished.</p>
+
+    <h3>9.4 What reproducing the paper costs</h3>
+    <ul class="points">
+      <li><b>Platform fees: $0.</b> The full replication — three 8-query runs per platform plus schema calls and tests (~30 Arcade executions, ~25 Composio calls) — fits comfortably in both free tiers (1,000 and 20,000 calls respectively). The definition census (§10.2) added ~150 Composio calls, still free.</li>
+      <li><b>Underlying services: $0.</b> Attio sandbox workspace (free trial tier), ~330 direct API calls for seeding and the raw baseline.</li>
+      <li><b>Model cost:</b> the deterministic arms use no LLM at all. The agent arm processed ~571K payload tokens across both platforms — ≈$1.71 at Sonnet input pricing, less on the small models we used.</li>
+      <li><b>Wall-clock:</b> roughly half a day, dominated by OAuth setup and workspace seeding — the undocumented deal-stage dependency (§4.1) was the only blocker.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2><span class="sn">10</span>From Replication to Eval: A Multi-Toolkit Protocol</h2>
+    <p>A single CRM toolkit is a case study, not an eval. The Attio result is consistent with a general design difference — Composio mirrors each service's raw API; Arcade ships a small curated tool set with field projection — but the <em>size</em> of the token gap should vary a lot by service. Metadata-heavy CRUD APIs (CRMs, project trackers) should show large gaps; payload-dominated services (email bodies, file contents, diffs) should show small ones, because the payload is irreducible on both sides. That is a testable prediction.</p>
+
+    <h3>10.1 Pilot measurement: tool-definition context overhead</h3>
+    <p>Response payloads are only one of two context costs a toolkit imposes; the other is the <b>tool definitions</b> an MCP client loads before the first call — a cost the paper's measurement boundary excluded entirely (A1). We measured it across four toolkits:</p>
+    <div class="table-scroll">
+    <table>
+      <thead>
+        <tr><th>Toolkit</th><th>Arcade tools</th><th>Arcade def. tokens</th><th>Composio tools</th><th>Composio def. tokens</th><th>Avg tokens/tool (A / C)</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Attio</td><td>20</td><td>7,457 (measured)</td><td>108</td><td>33,036 (full census)</td><td>373 / 306</td></tr>
+        <tr><td>Gmail</td><td>18</td><td>n/a&dagger;</td><td>63</td><td>~18,200 (est., n=12)</td><td>— / 289</td></tr>
+        <tr><td>GitHub</td><td>43</td><td>n/a&dagger;</td><td>867</td><td>~270,400 (est., n=12)</td><td>— / 312</td></tr>
+        <tr><td>Slack</td><td>10</td><td>n/a&dagger;</td><td>154</td><td>~58,700 (est., n=12)</td><td>— / 381</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="note">Tokens: tiktoken cl100k_base on minified definition JSON. Composio definitions fetched per tool via its CLI (Attio: all 108; others: random sample of 12, seeded). Arcade Attio: their <code class="inl">/v1/tools</code> API response captured during the replication; Arcade tool counts for other toolkits from public docs. &dagger;The Arcade API key was revoked when the replication ended (by design); re-measuring needs a fresh key — protocol below. Data: <code class="inl">definition-tokens.json</code> [4].</p>
+    <ul class="points">
+      <li><b>Per-tool definitions are comparable</b> (~290–380 tokens on both platforms; Arcade's Attio tools are in fact ~22% larger per tool than Composio's). The platforms differ not in schema verbosity but in <b>catalog philosophy</b>: Composio exposes near-full API surfaces (867 GitHub tools), Arcade curates small sets (43).</li>
+      <li><b>Naively mounting a full toolkit</b> costs 4.4× more context on Composio for Attio (33K vs 7.5K tokens) and an estimated ~270K tokens for GitHub — more than an entire 200K context window before the first call. Both vendors mitigate this (Composio defaults to dynamic tool search; Arcade scopes servers), so this measures the worst-case default, not necessarily practice.</li>
+      <li><b>Folding definitions into the Attio benchmark</b> (full toolkit loaded once + fair response totals) gives (564,231 + 33,036) / (11,283 + 7,457) ≈ <b>32×</b> — another fair-framing data point between the 50× and 8.5× bounds of §6.4.</li>
+    </ul>
+
+    <h3>10.2 The protocol</h3>
+    <ul class="points">
+      <li><b>1 · Toolkit set.</b> Services available on both platforms with seedable sandboxes: Gmail, GitHub, Slack, Notion, Linear (+ Attio as the anchor). One metadata-heavy and one payload-heavy service minimum.</li>
+      <li><b>2 · Fixtures.</b> A deterministic seed script per service, committed: e.g., Gmail — 60 synthetic threads with labels and attachments metadata; GitHub — a fixture repo with 50 issues, 10 PRs, 100 files; Slack — 5 channels, 200 messages. (The Attio study showed seeds must document hidden dependencies — §4.1.)</li>
+      <li><b>3 · Query suite.</b> 8 read queries per toolkit mirroring the paper's taxonomy: list, status filter, numeric filter, text search, select filter, date filter, compound filter, sort+limit.</li>
+      <li><b>4 · Arms.</b> Deterministic replay (logged params), matched limits, agent-driven (small model, prompts only), raw-API baseline — exactly as in §4.2.</li>
+      <li><b>5 · Metrics.</b> Payload tokens/query; tokens/record; passthrough ratio vs raw API; definition overhead; executions/query including retries and discovery; all-in $/run on each plan at $3 / $0.30 / $0.05 per M; context-fit (% of 200K).</li>
+      <li><b>6 · Controls.</b> Canonical minified JSON; identical record sets both sides; schema/discovery calls counted in totals; n≥3 repeats for agent arms; all raw responses published.</li>
+      <li><b>7 · Reporting.</b> Per-toolkit scorecards plus a cross-toolkit summary; no single-number headline — the Attio case shows how much a "100×" compresses real structure.</li>
+    </ul>
+
+    <h3>10.3 Status</h3>
+    <p>Complete: Attio end-to-end (this report); definition census across 4 toolkits; protocol and scripts. Blocked: response runs for Gmail/GitHub/Slack require a fresh Arcade API key and per-service OAuth on both platforms — the replication's credentials were revoked when it finished. Estimated marginal cost to run the remaining three toolkits, based on §9.4: $0 in platform fees (free tiers), a few dollars of model spend, and most of the effort in fixture seeding.</p>
+  </section>
+
+  <section>
+    <h2><span class="sn">11</span>Conclusion</h2>
     <div class="verdict-grid">
       <div class="stat red">
         <div class="num">100.6×</div>
@@ -487,14 +594,18 @@
       </div>
       <div class="stat blue">
         <div class="num">50–64×</div>
-        <div class="lbl"><b>The defensible number.</b> Same records on both sides, both payloads minified: 63.6×. Counting Arcade's required schema-discovery calls: 50.0×. Still a real, large gap — Composio relays Attio's verbose API format wholesale.</div>
+        <div class="lbl"><b>The defensible token ratio.</b> Same records on both sides, both payloads minified: 63.6×. Counting Arcade's required schema-discovery calls: 50.0×. Real and large — Composio relays Attio's verbose API format wholesale.</div>
+      </div>
+      <div class="stat violet">
+        <div class="num">12.7×</div>
+        <div class="lbl"><b>The all-in cost ratio</b> at the paper's own $3/M model pricing, once platform fees enter (§9). Composio includes 100× more tool calls per dollar; Arcade's overage is ~33× per call. Below ≈$0.18/M model pricing, the ordering flips.</div>
       </div>
       <div class="stat green">
         <div class="num">8.5×</div>
-        <div class="lbl"><b>The engineering view.</b> What would remain if Composio stripped Attio's per-value metadata and projected requested fields (H5 rejected). The residual is response flattening — design, not data.</div>
+        <div class="lbl"><b>The engineering floor.</b> What would remain if Composio stripped Attio's per-value metadata and projected requested fields (H5 rejected). The residual is response flattening — design, not data.</div>
       </div>
     </div>
-    <p style="margin-top:16px">The benchmark's direction is right and its data is honest; its magnitude is partly a measurement artifact, and its framing presents a fixable integration choice as an intrinsic gap. Read as engineering guidance rather than marketing: response shape is the product. A toolkit that projects fields and strips metadata turns the same API into ~2% of the tokens — and that decision, not the model, the client, or the agent, determined every number in this study.</p>
+    <p style="margin-top:16px">The benchmark's direction is right and its data is honest; its magnitude is partly a measurement artifact, and its framing presents a fixable integration choice as an intrinsic gap. Three numbers the single headline hides: the defensible token ratio is 50–64×; the all-in bill ratio at the paper's own pricing is ~12.7×, because token costs and platform fees flow to different parties and pull in opposite directions; and the irreducible design gap is ~8.5×. Response shape is the product — a toolkit that projects fields and strips metadata turns the same API into ~2% of the tokens, and that decision, not the model, the client, or the agent, determined every number in this study. One toolkit is still a case study: the §10 protocol, with its definition-overhead pilot already run, is the path from a vendor benchmark to an eval.</p>
   </section>
 
   <section>
@@ -503,7 +614,9 @@
       <li>Hood, E. "MCP Toolkit Benchmark: Arcade.dev vs Composio, A 100x Token Difference." Arcade.dev, March 1, 2026. <a href="https://www.arcade.dev/blog/attio-mcp-toolkit-benchmark">arcade.dev/blog/attio-mcp-toolkit-benchmark</a></li>
       <li>Arcade AI. <a href="https://github.com/ArcadeAI/attio-mcp-benchmark">github.com/ArcadeAI/attio-mcp-benchmark</a> — seed script, eval prompts, committed raw responses.</li>
       <li>Liu, N. F., et al. "Lost in the Middle: How Language Models Use Long Contexts." 2023. <a href="https://arxiv.org/abs/2307.03172">arXiv:2307.03172</a> (cited by [1] for long-context degradation).</li>
-      <li>This replication: <a href="https://github.com/shawnesquivel/arcade-attio-benchmark-repro">github.com/shawnesquivel/arcade-attio-benchmark-repro</a> — analysis.json, decomposition.json, agent-run-analysis.json, editable Excalidraw diagrams.</li>
+      <li>This replication: <a href="https://github.com/shawnesquivel/arcade-attio-benchmark-repro">github.com/shawnesquivel/arcade-attio-benchmark-repro</a> — analysis.json, decomposition.json, agent-run-analysis.json, definition-tokens.json, editable Excalidraw diagrams.</li>
+      <li>Composio pricing. <a href="https://composio.dev/pricing">composio.dev/pricing</a> — captured June 12, 2026: Free 20K calls/mo; $29/mo 200K calls, then $0.299/1K; $229/mo 2M calls, then $0.249/1K; Enterprise custom.</li>
+      <li>Arcade pricing. <a href="https://www.arcade.dev/pricing">arcade.dev/pricing</a> — captured June 12, 2026: Hobby free, 1,000 standard executions + 50 pro; Growth $25/mo, 2,000 standard then $0.01 each, 100 pro then $0.50 each, 600 auth challenges then $0.05 each, hosted servers $0.05/server-hour; Enterprise custom.</li>
     </ol>
   </section>
 
